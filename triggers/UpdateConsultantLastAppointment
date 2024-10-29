@@ -1,0 +1,24 @@
+trigger UpdateConsultantLastAppointment on Appointment__c (after update) {
+    Map<Id, Consultant__c> consultantsToUpdate = new Map<Id, Consultant__c>();
+
+    for (Appointment__c app : Trigger.New) {
+        // Check if the status has been updated to "Completed"
+        if (app.Status__c == 'Completed' && Trigger.oldMap.get(app.Id).Status__c != 'Completed') {
+            // Retrieve the consultant associated with this appointment
+            if (app.Consultant__c != null) {
+                Consultant__c consultant = consultantsToUpdate.get(app.Consultant__c);
+                if (consultant == null) {
+                    consultant = new Consultant__c(Id = app.Consultant__c);
+                    consultantsToUpdate.put(app.Consultant__c, consultant);
+                }
+                // Set the Last_Completed_Appointment__c field to the appointment date
+                //consultant.LastModifiedById = app.Appointment_DateTime_c.date();
+            }
+        }
+    }
+
+    // Update the Consultant records if needed
+    if (!consultantsToUpdate.isEmpty()) {
+        update consultantsToUpdate.values();
+    }
+}
