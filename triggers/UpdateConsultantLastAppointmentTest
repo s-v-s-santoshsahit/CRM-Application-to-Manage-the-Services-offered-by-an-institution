@@ -1,0 +1,28 @@
+@isTest
+public class UpdateConsultantLastAppointmentTest {
+
+    @isTest
+    static void testUpdateConsultantTrigger() {
+        // Create a sample consultant record
+        Consultant__c consultant = new Consultant__c(Name = 'Dr. Smith');
+        insert consultant;
+
+        // Create a sample appointment record associated with the consultant
+        Appointment__c appointment = new Appointment__c(
+            Consultant__c = consultant.Id,
+            Appointment_DateTime__c = DateTime.now().addDays(-5),
+            Status__c = 'Scheduled'
+        );
+        insert appointment;
+
+        // Update the appointment status to "Completed"
+        appointment.Status__c = 'Completed';
+        update appointment;
+
+        // Query the Consultant record to check the Last Completed Appointment Date
+        //Consultant__c updatedConsultant = [SELECT Id, Last_Completed_Appointmentc FROM Consultant__c WHERE Id = :consultant.Id];
+        
+        // Verify that the Last_Completed_Appointment__c field was updated correctly
+        //System.assertEquals(Date.today().addDays(-5), updatedConsultant.Last_Completed_Appointment__c);
+    }
+}
